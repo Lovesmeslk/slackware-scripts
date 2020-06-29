@@ -1,0 +1,217 @@
+#!/bin/bash
+# Init
+FILE="/tmp/out.$$"
+GREP="/bin/grep"
+#....
+# Make sure only root can run our script
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root if you install regular user
+   please use the another method " 1>&2
+   exit 1
+fi
+# ...
+
+# no space on disk uncomment
+#NOSPACE=bypass
+# <-- uncomment your server 
+#MIRROR=rsync://ftp.swin.edu.au/slackware
+#MIRROR=rsync://mirror.internode.on.net/slackware
+#MIRROR=rsync://slackware.mirror.digitalpacific.com.au/slackware
+#MIRROR=rsync://syd.mirror.rackspace.com/slackware
+#MIRROR=rsync://mirrors.linux-bulgaria.org/slackware
+#MIRROR=rsync://mirrors.netix.net/slackware
+#MIRROR=rsync://mirrors.slackware.bg/slackware
+#MIRROR=rsync://mirrors.unixsol.org/slackware
+#MIRROR=rsync://slackware.telecoms.bg/slackware
+#MIRROR=rsync://x.ultranet.biz/slackware
+#MIRROR=rsync://linorg.usp.br/slackware
+#MIRROR=rsync://slackmirror.cbpf.br/pub/slackware
+#MIRROR=rsync://slackware-brasil.com.br/slackware
+#MIRROR=rsync://mirror.datacenter.by/slackware
+#MIRROR=rsync://mirror.csclub.uwaterloo.ca/slackware
+#MIRROR=rsync://mirror.its.dal.ca/slackware
+#MIRROR=rsync://slackware.freemirror.org/slackware
+#MIRROR=rsync://mirrors.ucr.ac.cr/slackware/pub/slackware
+#MIRROR=rsync://ftp.linux.cz/pub/linux/slackware
+#MIRROR=rsync://download.dlackware.com/slackware
+#MIRROR=rsync://ftp.tu-chemnitz.de/ftp/pub/linux/slackware
+#MIRROR=rsync://ftp6.gwdg.de/pub/linux/slackware
+#MIRROR=rsync://linux.rz.rub.de/slackware
+#MIRROR=rsync://mirror.de.leaseweb.net/slackware
+#MIRROR=rsync://mirror.netcologne.de/slackware
+#MIRROR=rsync://mirrors.nav.ro/slackware
+#MIRROR=rsync://mirrors.dotsrc.org/slackware
+#MIRROR=rsync://mirror.cedia.org.ec/slackware
+#MIRROR=rsync://bear.alienbase.nl/mirrors/slackware
+#MIRROR=rsync://mirrors.phx.ms/slackware
+#MIRROR=rsync://nephtys.lip6.fr/ftp/pub/linux/distributions/slackware
+#MIRROR=rsync://slackware.mirrors.ovh.net/ftp.slackware.com/ 
+#MIRROR=rsync://lon.mirror.rackspace.com/slackware
+#MIRROR=rsync://mirror.bytemark.co.uk/slackware
+#MIRROR=rsync://rsync.mirrorservice.org/ftp.slackware.com/pub/slackware
+#MIRROR=rsync://slackware.uk/slackware
+#MIRROR=rsync://ftp.cc.uoc.gr/slackware
+#MIRROR=rsync://ftp.ntua.gr/slackware
+#MIRROR=rsync://hkg.mirror.rackspace.com/slackware
+#MIRROR=rsync://mirror-hk.koddos.net/slackware
+#MIRROR=rsync://mirror.slackware.hr/slackware
+#MIRROR=rsync://ftp.gtx.hu/slackware
+#MIRROR=rsync://quantum-mirror.hu/slackware
+#MIRROR=rsync://iso.ukdw.ac.id/iso/slackware
+#MIRROR=rsync://kambing.ui.ac.id/slackware
+#MIRROR=rsync://repo.ukdw.ac.id/slackware
+#MIRROR=rsync://ftp.kddilabs.jp/slackware
+#MIRROR=rsync://ftp.nara.wide.ad.jp/slackware
+#MIRROR=rsync://ftp.riken.go.jp/slackware
+#MIRROR=rsync://mirrors.atviras.lt/slackware
+#MIRROR=rsync://slackware.laukas.lt/slackware
+#MIRROR=rsync://mirror.lagoon.nc/pub/slackware
+#MIRROR=rsync://ftp.nluug.nl/slackware
+#MIRROR=rsync://mirror.koddos.net/slackware
+#MIRROR=rsync://mirror.nl.leaseweb.net/slackware
+#MIRROR=rsync://omegageek.noip.me/mirrors/slackware
+#MIRROR=rsync://rsync.slackware.no/slackware
+#MIRROR=rsync://ftp.slackware.org.nz/slackware
+#MIRROR=rsync://mirror.rise.ph/slackware
+#MIRROR=rsync://mirror.onet.pl/pub/mirrors/slackware
+#MIRROR=rsync://slackware.pl/slackware
+#MIRROR=rsync://sunsite.icm.edu.pl/slackware
+#MIRROR=rsync://ftp.rnl.tecnico.ulisboa.pt/pub/slackware
+#MIRROR=rsync://mirrors.nxthost.com/slackware
+#MIRROR=rsync://mirror.yandex.ru/slackware
+#MIRROR=rsync://slackware.tsu.ru/slackware
+#MIRROR=rsync://ftp.acc.umu.se/mirror/slackware.com/ 
+#MIRROR=rsync://rsync.linux.pizza/mirror/slackware
+#MIRROR=rsync://mirror.wheel.sk/slackware
+#MIRROR=rsync://ftp.linux.org.tr/slackware
+#MIRROR=rsync://ifconfig.com.ua/slackware
+#MIRROR=rsync://mirrors.nix.org.ua/slackware
+#MIRROR=rsync://dfw.mirror.rackspace.com/slackware
+#MIRROR=rsync://ftp.slackware.com/slackware
+#MIRROR=rsync://ftp.ussg.indiana.edu/slackware
+#MIRROR=rsync://mirror.cs.princeton.edu/slackware
+#MIRROR=rsync://mirror.math.princeton.edu/pub/slackware
+#MIRROR=rsync://mirror.slackbuilds.org/slackware
+#MIRROR=rsync://mirror.us.leaseweb.net/slackware
+#MIRROR=rsync://mirrors.kernel.org/slackware
+#MIRROR=rsync://mirrors.syringanetworks.net/slackware
+#MIRROR=rsync://mirrors.xmission.com/slackware
+#MIRROR=rsync://rsync.gtlib.gatech.edu/slackware
+#MIRROR=rsync://rsync.lug.udel.edu/slackware
+#MIRROR=rsync://slackblog.com/slackware
+MIRROR=rsync://slackware.absolutehosting.net/slackware
+#MIRROR=rsync://slackware.cs.utah.edu/slackware
+#MIRROR=rsync://slackware.mirrors.tds.net/slackware
+#MIRROR=rsync://ftp.is.co.za/IS-Mirror/ftp.slackware.com/pub
+#MIRROR=rsync://ftp.wa.co.za/pub/slackware
+#MIRROR=rsync://mirror.ac.za/slackware
+
+# slackware version
+SLKVER="$(cat /etc/slackware-version |head -1)"
+if [ "$SLKVER" = "Slackware 14.0" ]; then
+  SLKUSYS="14.0"
+elif [ "$SLKVER" = "Slackware 14.1" ]; then
+  SLKUSYS="14.1"
+elif [ "$SLKVER" = "Slackware 14.2" ]; then
+  SLKUSYS="14.2"
+else
+  SLKUSYS="current"
+fi
+# installed slackware arch
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+if [ "$ARCH" = "i586" ]; then
+  SLARCH=""
+elif [ "$ARCH" = "i686" ]; then
+  SLARCH=""
+elif [ "$ARCH" = "x86_64" ]; then
+  SLARCH="64"
+else
+  SLKCFLAGS="-O2"
+  SLARCH=""
+fi
+
+if [ "$NOSPACE" = "bypass" ]; then
+	echo $NOSPACE rsync use slackpkg server
+else
+
+if [ -d /home/ftp/pub/Linux/Slackware/slackware$SLARCH-$SLKUSYS ]; then
+    rsync -r -a -v     --delete --progress --stats --exclude source   $MIRROR/slackware$SLARCH-$SLKUSYS /home/ftp/pub/Linux/Slackware/
+else
+	mkdir -p /home/ftp/pub/Linux/Slackware/slackware$SLARCH-$SLKUSYS
+	rsync -r -a -v     --delete --progress --stats --exclude source    $MIRROR/slackware$SLARCH-$SLKUSYS /home/ftp/pub/Linux/Slackware/
+ fi
+fi
+slackpkg update
+
+slackpkg install-new
+
+slackpkg upgrade-all
+
+
+# mkintrid for new kernel if installed from last update
+#get installed kernel version
+KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
+
+# running kernel version
+RKERV=$(uname -r)
+
+#Check if new kernel on upgrade
+if [ "$KERNV" = "$RKERV" ]; then
+	echo no new kernel installed
+else
+ geninitrd 
+fi
+
+# See if  multi-arch libraries are installed
+if [ -f  /etc/profile.d/32dev.sh ]; then
+
+# ...
+function pause(){
+   read -p "$*"
+}
+
+echo -e "\e[1;33m you are runnining multi-lib\e[0m"
+echo -e "\e[1;33m Recommended to upgrade your multilib\e[0m"
+pause 'Press [Enter] key to continue or ctrl c to stop...'
+#  pause for user
+#
+##UPGRADE MULTI-LIB
+if [ "$NOSPACE" = "bypass" ]; then
+	echo $NOSPACE rsync use slackpkg server
+else
+if [ -d /home/ftp/pub/Linux/Slackware/slackware$SLARCH-$SLKUSYS ]; then
+    rsync -r -a -v     --delete --progress --stats    $MIRROR/slackware-$SLKUSYS /home/ftp/pub/Linux/Slackware/
+else
+	mkdir -p /home/ftp/pub/Linux/Slackware/slackware$SLARCH-$SLKUSYS
+	rsync -r -a -v     --delete --progress --stats    $MIRROR/slackware-$SLKUSYS /home/ftp/pub/Linux/Slackware/
+  fi
+fi
+if [ "$NOSPACE" = "bypass" ]; then
+rsync -r -a -v  --delete --progress --stats   rsync://bear.alienbase.nl/mirrors/people/alien/multilib/$SLKUSYS  /var/cache/multilib
+cd /var/cache/multilib/$SLKUSYS
+upgradepkg --reinstall  --install-new *.t?z
+cd /var/cache/multilib/$SLKUSYS/slackware64-compat32
+upgradepkg --install-new *?/*.t?z
+else
+rsync -r -a -v  --delete --progress --stats --exclude slackware64-compat32  rsync://bear.alienbase.nl/mirrors/people/alien/multilib/$SLKUSYS  /var/cache/multilib
+mkdir -p /var/cache/multilib/$SLKUSYS/slackware64-compat32
+cd /var/cache/multilib/$SLKUSYS
+upgradepkg --reinstall  --install-new *.t?z
+cd /var/cache/multilib/$SLKUSYS/slackware64-compat32
+massconvert32.sh -u file:///home/ftp/pub/Linux/Slackware/slackware-$SLKUSYS/slackware/
+upgradepkg --install-new *?/*.t?z
+fi
+rm -rf /tmp/package*
+echo all updated
+exit
+else
+	echo all updated
+	exit
+fi
