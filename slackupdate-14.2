@@ -156,16 +156,32 @@ slackpkg upgrade-all
 
 # mkintrid for new kernel if installed from last update
 #get installed kernel version
-KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
+KOUT=kernelv.txt
+sed -n 3p /boot/config > koutput.txt
+awk '{print($3)}' koutput.txt >  kernelv.txt
 
-# running kernel version
+KERNV=$(sed "s/\(.\{10\}\).\{6\}//" "${KOUT}")
 RKERV=$(uname -r)
 
-#Check if new kernel on upgrade
 if [ "$KERNV" = "$RKERV" ]; then
 	echo no new kernel installed
 else
- geninitrd 
+#remove old intrid tree 
+rm -rf /boot/initrd*
+#set drive partition and partition extension
+DRTXT=drive.txt
+DTEXT=exttype.txt
+mount|grep ' / '|cut -d' ' -f 1 > drive.txt 
+DRIVE=$(sed "s/\(.\{9\}\).\{6\}//" "${DRTXT}")
+blkid -o export $DRIVE | grep '^TYPE' | cut -d"=" -f2 > exttype.txt
+EXT=$(sed "s/\(.\{9\}\).\{6\}//" "${DTEXT}")
+# clean up  for rerun
+rm  $DRTXT
+rm  $DTEXT
+rm koutput.txt
+rm kernelv.txt
+#build the initrd.img
+mkinitrd -c -k $KERNV$KERNH -f $EXT -r $DRIVE -m xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:hid:usbhid:i2c-hid:hid_generic:hid-asus:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:jbd2:mbcache:$EXT  -u -o /boot/initrd.gz
 fi
 
 # See if  multi-arch libraries are installed
