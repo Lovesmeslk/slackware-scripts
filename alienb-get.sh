@@ -1,8 +1,4 @@
 #!/bin/bash
-if [ "$(id -u)" != "0" ]; then
-   echo "This script must be run as root" 1>&2
-   exit 1
-fi
 
 while true; do
 
@@ -33,7 +29,7 @@ INST=$install
 
 
 
-EDITPG=vim # add you favorite editor here defaylt is vim kwrite,kate,gvim,geany.
+EDITPG=kwrite # add you favorite editor here defaylt is vim kwrite,kate,gvim,geany.
 
 if [ -z "$ARCH" ]; then
   case "$( uname -m )" in
@@ -46,7 +42,7 @@ fi
 
 
 CWD=$(pwd)
-TMP=${TMP:-/tmp/SBo/$SLKVER}
+TMP=${TMP:-$CWD/Alien/$SLKVER}
 BOB=$TMP/$PROGNM
 
 if [ "$ARCH" = "x86_64" ]; then
@@ -64,19 +60,21 @@ rsync -r -a -v  --delete --progress --stats rsync://slackware.uk/people/alien/sl
 echo $TMP
 cd $TMP
 
-SLKGCC="$(gcc --version | grep gcc)"
 
-
-
-if [ "$SLKGCC" = "gcc (GCC) 4.7.1" ]; then
+# slackware version
+SLKVERIN="$(cat /etc/slackware-version |head -1)"
+if [ "$SLKVERIN" = "Slackware 14.0" ]; then
   SLKUSYS="14.0"
-elif [ "$SLKGCC" = "gcc (GCC) 4.8.2" ]; then
+elif [ "$SLKVERIN" = "Slackware 14.1" ]; then
   SLKUSYS="14.1"
-elif [ "$SLKGCC" = "gcc (GCC) 5.5.0" ]; then
+elif [ "$SLKVERIN" = "Slackware 14.2" ]; then
   SLKUSYS="14.2"
+elif [ "$SLKVERIN" = "Slackware 14.2+" ]; then
+  SLKUSYS="current"
 else
   SLKUSYS="current"
 fi
+
 echo $SLKUSYS
 echo $SLKVER
 sleep 5
@@ -113,22 +111,20 @@ else
 fi
 
 
-if [ -d   $TMP/$PROGNM ]; then
+if [ -f   $BOB/*.t?z ]; then
   echo -e "\e[1;33m $PROGNM downloaded \e[0m"
   sleep 1
 
 
 if [ "$INST" = "yes" ]; then
+  echo type in your root password
     cd  $BOB
-    upgradepkg --reinstall --install-new *.t?z
+ su  -c   "upgradepkg --reinstall --install-new *.t?z"
 else
     echo -e "\e[1;33m your program is locate $BOB \e[0m"
     sleep 3
 fi
 
-
-
-echo $PROGNM installed
 else
 
 function pause(){
@@ -140,7 +136,7 @@ function pause(){
   echo -e "\e[1;33m  Would you like to look it up? press enter to see the repo \e[0m"
 pause 'Press [Enter] key to continue or ctrl c to stop...'
 # ...
-lynx  http://slackware.uk/people/alien/slackbuilds/
+firefox  http://slackware.uk/people/alien/slackbuilds/
 
 fi
 
