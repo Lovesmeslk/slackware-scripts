@@ -137,7 +137,7 @@ else
   SLARCH=""
 fi
 uncomment # low on space
-$NOSPACE=bypass
+#NOSPACE=bypass
 
 if [ "$NOSPACE" = "bypass" ]; then
 	echo $NOSPACE rsync use slackpkg server
