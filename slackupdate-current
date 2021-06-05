@@ -137,6 +137,8 @@ else
   SLARCH=""
 fi
 
+cd /root
+
 if [ "$NOSPACE" = "bypass" ]; then
 	echo $NOSPACE rsync use slackpkg server
 else
@@ -162,11 +164,16 @@ KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
 # running kernel version
 RKERV=$(uname -r)
 
+if [ -f /lib/modules/$RKERV/kernel/drivers/video/nvidia.ko ]; then
+	echo going to build nvidia drivers
+INSTALL=yes /usr/sbin/nvidia-update
+fi
+
 #Check if new kernel on upgrade
 if [ "$KERNV" = "$RKERV" ]; then
 	echo no new kernel installed
 else
- geninitrd 
+geninitrd
 fi
 
 # See if  multi-arch libraries are installed
