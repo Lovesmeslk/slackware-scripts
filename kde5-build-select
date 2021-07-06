@@ -1,0 +1,107 @@
+#!/bin/bash
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+if [ "$ARCH" = "i586" ]; then
+  SLARCH="32"
+elif [ "$ARCH" = "i686" ]; then
+  SLARCH=""
+elif [ "$ARCH" = "x86_64" ]; then
+  SLARCH="64"
+else
+  SLKCFLAGS="-O2"
+  SLARCH=""
+fi
+
+# slackware version
+SLKVER="$(cat /etc/slackware-version |head -1)"
+if [ "$SLKVER" = "Slackware 14.0" ]; then
+  SLKUSYS="14.0"
+elif [ "$SLKVER" = "Slackware 14.1" ]; then
+  SLKUSYS="14.1"
+elif [ "$SLKVER" = "Slackware 14.2" ]; then
+  SLKUSYS="14.2"
+elif [ "$SLKVER" = "Slackware 15.0" ]; then
+  SLKUSYS="15.0"
+else
+  SLKUSYS="current"
+fi
+# installed slackware arch
+CWD=$(pwd)
+
+#MIRROR=rsync://slackware.absolutehosting.net/slackware
+MIRROR=rsync://ftp.slackware.com/slackware
+#MIRROR=rsync://dfw.mirror.rackspace.com/slackware 
+#MIRROR=rsync://slackware.mirrors.tds.net/slackware
+#MIRROR=rsync://mirrors.kernel.org/slackware/ 
+rsync -r -a -v     --delete --progress --stats    $MIRROR/slackware"$SLARCH"-"$SLKUSYS"/source/kde/kde/ $CWD/kde
+cd $CWD/kde
+#cat modules/all-packaged-applications
+#or gui
+#kwrite modules/all-packaged-applications &
+cat modules/* > program.txt
+kwrite  program.txt &
+while true; do
+# Ask the user for the Program name
+echo -e "\e[1;33m what  program do you need?\e[0m"
+read prgname
+echo -e "\e[1;34m It's ok lets find the program name it is in \e[0m"
+sleep 2
+PROGNM=$prgname
+
+APP=$(cat modules/applications | grep $PROGNM)
+APX=$(cat modules/applications-extra | grep $PROGNM)
+FRM=$(cat modules/frameworks | grep $PROGNM)
+KD4=$(cat modules/kde4 | grep $PROGNM)
+PIM=$(cat modules/kdepim | grep $PROGNM)
+PLM=$(cat modules/plasma | grep $PROGNM)
+PLX=$(cat modules/plasma-extra | grep $PROGNM)
+TEL=$(cat modules/telepathy | grep $PROGNM)
+if [ "$APP" = "$PROGNM" ]; then
+MODULE=applications
+fi
+if [ "$APX" = "$PROGNM" ]; then
+MODULE=applications-extra
+fi
+if [ "$FRM" = "$PROGNM" ]; then
+MODULE=frameworks
+fi
+if [ "$KD4" = "$PROGNM" ]; then
+MODULE=kde4
+fi
+if [ "$PIM" = "$PROGNM" ]; then
+MODULE=kdepim
+fi
+if [ "$PLM" = "$PROGNM" ]; then
+MODULE=plasma
+fi
+if [ "$PLX" = "$PROGNM" ]; then
+MODULE=plasma-extra
+fi
+if [ "$TEL" = "$PROGNM" ]; then
+MODULE=telepathy
+fi
+echo put your proot password in to build and install
+su -c "./kde.SlackBuild $MODULE:$PROGNM"
+
+function pause(){
+   read -p "$*"
+}
+ 
+# ...
+   echo -e "\e[1;33m Would you like to build another \e[0m"
+pause 'Press [Enter] key to continue or ctrl c to stop...'
+# ...
+# rest of the script
+#
+
+    for i in {Type In another Program}; do
+        echo     $i
+        sleep 1
+    done
+done

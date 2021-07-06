@@ -11,8 +11,10 @@ if [ "$(id -u)" != "0" ]; then
 fi
 # ...
 
-# no space on disk uncomment
-#NOSPACE=bypass
+# no space on disk
+# default not to creat and sync repo
+# set to "#NOSPACE=bypass" to create a mirror
+NOSPACE=bypass
 # <-- uncomment your server 
 #MIRROR=rsync://ftp.swin.edu.au/slackware
 #MIRROR=rsync://mirror.internode.on.net/slackware
@@ -93,18 +95,19 @@ fi
 #MIRROR=rsync://mirror.math.princeton.edu/pub/slackware
 #MIRROR=rsync://mirror.slackbuilds.org/slackware
 #MIRROR=rsync://mirror.us.leaseweb.net/slackware
-#MIRROR=rsync://mirrors.kernel.org/slackware
+MIRROR=rsync://mirrors.kernel.org/slackware
 #MIRROR=rsync://mirrors.syringanetworks.net/slackware
 #MIRROR=rsync://mirrors.xmission.com/slackware
 #MIRROR=rsync://rsync.gtlib.gatech.edu/slackware
 #MIRROR=rsync://rsync.lug.udel.edu/slackware
 #MIRROR=rsync://slackblog.com/slackware
-MIRROR=rsync://slackware.absolutehosting.net/slackware
+#MIRROR=rsync://slackware.absolutehosting.net/slackware
 #MIRROR=rsync://slackware.cs.utah.edu/slackware
 #MIRROR=rsync://slackware.mirrors.tds.net/slackware
 #MIRROR=rsync://ftp.is.co.za/IS-Mirror/ftp.slackware.com/pub
 #MIRROR=rsync://ftp.wa.co.za/pub/slackware
 #MIRROR=rsync://mirror.ac.za/slackware
+
 # slackware version
 SLKVER="$(cat /etc/slackware-version |head -1)"
 if [ "$SLKVER" = "Slackware 14.0" ]; then
@@ -113,6 +116,8 @@ elif [ "$SLKVER" = "Slackware 14.1" ]; then
   SLKUSYS="14.1"
 elif [ "$SLKVER" = "Slackware 14.2" ]; then
   SLKUSYS="14.2"
+elif [ "$SLKVER" = "Slackware 15.0" ]; then
+  SLKUSYS="15.0"
 else
   SLKUSYS="current"
 fi
@@ -136,6 +141,8 @@ else
   SLARCH=""
 fi
 
+cd /root
+
 if [ "$NOSPACE" = "bypass" ]; then
 	echo $NOSPACE rsync use slackpkg server
 else
@@ -156,33 +163,23 @@ slackpkg upgrade-all
 
 # mkintrid for new kernel if installed from last update
 #get installed kernel version
-KOUT=kernelv.txt
-sed -n 3p /boot/config > koutput.txt
-awk '{print($3)}' koutput.txt >  kernelv.txt
+KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
 
-KERNV=$(sed "s/\(.\{10\}\).\{6\}//" "${KOUT}")
+# running kernel version
 RKERV=$(uname -r)
 
+#Check if new kernel on upgrade
 if [ "$KERNV" = "$RKERV" ]; then
-	echo no new kernel installed
+    echo no new kernel installed
 else
-#remove old intrid tree 
-rm -rf /boot/initrd*
-#set drive partition and partition extension
-DRTXT=drive.txt
-DTEXT=exttype.txt
-mount|grep ' / '|cut -d' ' -f 1 > drive.txt 
-DRIVE=$(sed "s/\(.\{9\}\).\{6\}//" "${DRTXT}")
-blkid -o export $DRIVE | grep '^TYPE' | cut -d"=" -f2 > exttype.txt
-EXT=$(sed "s/\(.\{9\}\).\{6\}//" "${DTEXT}")
-# clean up  for rerun
-rm  $DRTXT
-rm  $DTEXT
-rm koutput.txt
-rm kernelv.txt
-#build the initrd.img
-mkinitrd -c -k $KERNV$KERNH -f $EXT -r $DRIVE -m xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:hid:usbhid:i2c-hid:hid_generic:hid-asus:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:jbd2:mbcache:$EXT  -u -o /boot/initrd.gz
+geninitrd
 fi
+
+# look to see if you have my nvidia-update installed
+if [ -f /usr/sbin/nvidia-update ]; then
+INSTAL=yes /usr/sbin/nvidia-update
+fi
+
 
 # See if  multi-arch libraries are installed
 if [ -f  /etc/profile.d/32dev.sh ]; then
