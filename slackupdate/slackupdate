@@ -14,7 +14,7 @@ fi
 # no space on disk
 # default not to creat and sync repo
 # set to "#NOSPACE=bypass" to create a mirror
-#NOSPACE=bypass
+NOSPACE=bypass
 # <-- uncomment your server 
 #MIRROR=rsync://ftp.swin.edu.au/slackware
 #MIRROR=rsync://mirror.internode.on.net/slackware
@@ -181,7 +181,6 @@ if [ "$KERNV" = "$RKERV" ]; then
 else
 $mkint
 fi
-
 #check if we need to update nvidia
 if [ "$KERNV" = "$RKERV" ]; then
 echo no  nvidia-update needed
