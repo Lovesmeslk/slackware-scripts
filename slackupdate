@@ -181,9 +181,14 @@ if [ "$KERNV" = "$RKERV" ]; then
 else
 $mkint
 fi
-#check for nvidia-update
+
+#check if we need to update nvidia
+if [ "$KERNV" = "$RKERV" ]; then
+echo no  nvidia-update needed
+else
 if [ -f /usr/sbin/nvidia-update ]; then
 INSTAL=yes /usr/sbin/nvidia-update
+fi
 fi
 
 
