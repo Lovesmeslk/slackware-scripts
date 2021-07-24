@@ -14,7 +14,7 @@ fi
 # no space on disk
 # default not to creat and sync repo
 # set to "#NOSPACE=bypass" to create a mirror
-NOSPACE=bypass
+#NOSPACE=bypass
 # <-- uncomment your server 
 #MIRROR=rsync://ftp.swin.edu.au/slackware
 #MIRROR=rsync://mirror.internode.on.net/slackware
@@ -117,7 +117,7 @@ elif [ "$SLKVER" = "Slackware 14.1" ]; then
 elif [ "$SLKVER" = "Slackware 14.2" ]; then
   SLKUSYS="14.2"
 elif [ "$SLKVER" = "Slackware 15.0" ]; then
-#  SLKUSYS="15.0" uncomment and and remove below.
+ # SLKUSYS="15.0" #uncomment and and remove below when 15.0 is released.
   SLKUSYS="current"
 else
   SLKUSYS="current"
@@ -169,14 +169,19 @@ KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
 # running kernel version
 RKERV=$(uname -r)
 
+if [ "$SLKVER" = "Slackware 14.2" ]; then
+mkint=$(/usr/share/mkinitrd/mkinitrd_command_generator.sh -k $KERNV | tail -1)
+else
+mkint=/usr/sbin/geninitrd
+fi
+
 #Check if new kernel on upgrade
 if [ "$KERNV" = "$RKERV" ]; then
     echo no new kernel installed
 else
-geninitrd
+$mkint
 fi
-
-# look to see if you have my nvidia-update installed
+#check for nvidia-update
 if [ -f /usr/sbin/nvidia-update ]; then
 INSTAL=yes /usr/sbin/nvidia-update
 fi
