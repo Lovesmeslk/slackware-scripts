@@ -1,0 +1,130 @@
+#!/bin/bash
+
+
+if [ -z "$ARCH" ]; then
+  case "$( uname -m )" in
+    i?86) ARCH=i586 ;;
+    arm*) ARCH=arm ;;
+       *) ARCH=$( uname -m ) ;;
+  esac
+fi
+
+
+if [ "$ARCH" = "i586" ]; then
+  SLKCA="Linux-x86"
+  KERNH="-smp"
+elif [ "$ARCH" = "i686" ]; then
+   SLKCA="Linux-x86"
+   KERNH="-smp"
+elif [ "$ARCH" = "x86_64" ]; then
+   SLKCA="Linux-x86_64"
+   KERNH=""
+else
+   SLKCA="Linux-x86_64"
+fi
+
+
+KERNV=$(sed -n 3p /boot/config | awk '{print($3)}')
+
+
+cd /root
+
+#check for multilib
+if [ -f  /etc/profile.d/32dev.sh ]; then
+NVC=".run"
+else
+NVC="-no-compat32.run"
+fi
+
+# This is nividia's latest stable
+filename=latest.txt
+
+#use till Nvidia fixes repo
+ wget  https://github.com/Drakeo/nvidia-update/raw/master/latest.txt 
+#curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
+
+# 2 digit ending for nvidia 
+GETNV1=$(cat $filename |head -c -5 |tail -c -33)
+RUNNV1=$(cat $filename |tail -c -31|head -c -5)
+# 3 digit ending for nvidia 
+GETNV2=$(cat $filename |head -c -5 |tail -c -35)
+RUNNV2=$(cat $filename |tail -c -32|head -c -5)
+# .xx.xx 2x2 digit
+GETNV3=$(cat $filename |head -c -5 |tail -c -39)
+RUNNV3=$(cat $filename |tail -c -34|head -c -5)
+# .xxx.xx 3X2 digit
+GETNV4=$(cat $filename |head -c -5 |tail -c -41)
+RUNNV4=$(cat $filename |tail -c -35|head -c -5)
+# .xxx.xxx 3x3 digit
+GETNV5=$(cat $filename |head -c -5 |tail -c -43)
+RUNNV5=$(cat $filename |tail -c -36|head -c -5)
+
+
+
+#wget -c  https://download.nvidia.com/XFree86/$SLKCA/$GETNV
+URL1=https://download.nvidia.com/XFree86/$SLKCA/$GETNV1$NVC
+URL2=https://download.nvidia.com/XFree86/$SLKCA/$GETNV2$NVC
+URL3=https://download.nvidia.com/XFree86/$SLKCA/$GETNV3$NVC
+URL4=https://download.nvidia.com/XFree86/$SLKCA/$GETNV4$NVC
+URL5=https://download.nvidia.com/XFree86/$SLKCA/$GETNV5$NVC
+
+if curl --output /dev/null --silent --fail -r 0-0 "$URL1"; then
+ BRNV=$RUNNV1$NVC
+ URNV=$URL1
+ else
+  echo x
+fi
+if curl --output /dev/null --silent --fail -r 0-0 "$URL2"; then
+ BRNV=$RUNNV2$NVC
+ URNV=$URL2
+ else
+  echo xx
+fi
+if curl --output /dev/null --silent --fail -r 0-0 "$URL3"; then
+ BRNV=$RUNNV3$NVC 
+ URNV=$URL3
+ else
+  echo xxx
+fi
+if curl --output /dev/null --silent --fail -r 0-0 "$URL4"; then
+ BRNV=$RUNNV4$NVC
+ URNV=$URL4
+ else
+ echo xxxx
+fi
+if curl --output /dev/null --silent --fail -r 0-0 "$URL4"; then
+ BRNV=$RUNNV5$NVC
+ URNV=$URL5
+ else
+ echo xxxxx
+fi
+ if [ -f $BRNV ]; then
+  echo $BRNV already downloaded
+  echo going to build for your kernel
+ else
+  echo downloding  $BRNV new update
+  echo going to build for your kernel
+ fi 
+sleep 2
+#remove for rerun
+rm  $filename
+curl -C - -O $URNV
+
+INSTAL=${INSTAL:-no}
+if [ "$INSTAL" = "yes" ]; then
+sh $BRNV --no-x-check -K -k $KERNV
+fi
+
+if [ -f /lib/modules/$KERNV/kernel/drivers/video/nvidia.ko ]; then
+	echo NVida latest installed 
+	exit
+fi
+#install NVIDIA kernel version for kernel upgrades
+if [ -f /usr/bin/nvidia-settings ]; then
+ echo your choice to save settings
+ sleep 3 
+ sh $BRNV -a  -k $KERNV
+else
+ echo  This is a new install jsut restart your Machine
+sh $BRNV -a -q -X -k $KERNV
+fi
