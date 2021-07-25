@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Slack Update
+Comment=Slackware system updater
+Exec=/usr/local/bin/slackupdate
+Icon=/usr/local/share/pixmap/slackupdate.png
+NoDisplay=false
+StartupNotify=true
+Terminal=1
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=true
+X-KDE-Username=root

@@ -27,7 +27,8 @@ elif [ "$SLKVER" = "Slackware 14.1" ]; then
 elif [ "$SLKVER" = "Slackware 14.2" ]; then
   SLKUSYS="14.2"
 elif [ "$SLKVER" = "Slackware 15.0" ]; then
-  SLKUSYS="15.0"
+  SLKUSYS="current" # delete this line on release of 15.0
+#  SLKUSYS="15.0" uncomment this line on release of 15.0
 else
   SLKUSYS="current"
 fi
@@ -35,10 +36,10 @@ fi
 CWD=$(pwd)
 
 #MIRROR=rsync://slackware.absolutehosting.net/slackware
-MIRROR=rsync://ftp.slackware.com/slackware
+#MIRROR=rsync://ftp.slackware.com/slackware
 #MIRROR=rsync://dfw.mirror.rackspace.com/slackware 
 #MIRROR=rsync://slackware.mirrors.tds.net/slackware
-#MIRROR=rsync://mirrors.kernel.org/slackware/ 
+MIRROR=rsync://mirrors.kernel.org/slackware/ 
 rsync -r -a -v     --delete --progress --stats    $MIRROR/slackware"$SLARCH"-"$SLKUSYS"/source/kde/kde/ $CWD/kde
 cd $CWD/kde
 #cat modules/all-packaged-applications
