@@ -38,9 +38,13 @@ fi
 
 # This is nividia's latest stable
 filename=latest.txt
+# This is nividia's beta testing
+#filename=beta.txt
+# This is nividia's legacy 
+#filename=legacy.txt
 
 #use till Nvidia fixes repo
- wget  https://github.com/Drakeo/nvidia-update/raw/master/latest.txt 
+ wget  https://raw.githubusercontent.com/Drakeo/nvidia-update/master/$filename
 #curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
 
 # 2 digit ending for nvidia 
