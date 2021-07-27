@@ -44,7 +44,8 @@ filename=latest.txt
 #filename=legacy.txt
 
 #use till Nvidia fixes repo
- wget  https://raw.githubusercontent.com/Drakeo/nvidia-update/master/$filename
+  wget  https://raw.githubusercontent.com/Drakeo/nvidia-update/master/$filename 
+#curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
 #curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
 
 # 2 digit ending for nvidia 
