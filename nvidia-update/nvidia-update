@@ -40,14 +40,17 @@ fi
 filename=latest.txt
 # This is nividia's beta testing
 #filename=beta.txt
-# This is nividia's legacy 
-#filename=legacy.txt
+# This is nividia's legacy
+# set for custom driver edit /etc/nvidia.txt
+#filename=nvidia.txt
 
+if [ "$filename" = "nvidia.txt" ]; then
+cp /etc/$filename /root
+else
 #use till Nvidia fixes repo
-  wget  https://raw.githubusercontent.com/Drakeo/nvidia-update/master/$filename 
+ wget  https://github.com/Drakeo/nvidia-update/raw/master/$filename
 #curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
-#curl -O  https://download.nvidia.com/XFree86/$SLKCA/$filename  #put back after Nvidia fixes repo
-
+fi
 # 2 digit ending for nvidia 
 GETNV1=$(cat $filename |head -c -5 |tail -c -33)
 RUNNV1=$(cat $filename |tail -c -31|head -c -5)
@@ -121,7 +124,7 @@ sh $BRNV --no-x-check -K -k $KERNV
 fi
 
 if [ -f /lib/modules/$KERNV/kernel/drivers/video/nvidia.ko ]; then
-	echo NVida latest installed 
+	echo $BRNV driver already installed 
 	exit
 fi
 #install NVIDIA kernel version for kernel upgrades
