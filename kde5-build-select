@@ -42,6 +42,7 @@ CWD=$(pwd)
 MIRROR=rsync://mirrors.kernel.org/slackware/ 
 rsync -r -a -v     --delete --progress --stats    $MIRROR/slackware"$SLARCH"-"$SLKUSYS"/source/kde/kde/ $CWD/kde
 cd $CWD/kde
+chmod +x kde.SlackBuild
 #cat modules/all-packaged-applications
 #or gui
 #kwrite modules/all-packaged-applications &
