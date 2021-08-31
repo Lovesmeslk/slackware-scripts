@@ -24,7 +24,7 @@ CWD=$(pwd)
 PKGNAM=slackupdate
 VERSION=${VERSION:-0.1}
 ARCH=noarch
-BUILD=${BUILD:-2}
+BUILD=${BUILD:-3}
 
 # If the variable PRINT_PACKAGE_NAME is set, then this script will report what
 # the name of the created package would be, and then exit. This information
@@ -44,11 +44,11 @@ mkdir -p $PKG/usr/local/bin
 
 cp $CWD/slackupdate.png $PKG/usr/local/share/pixmap
 cp $CWD/slackupdate $PKG/usr/local/bin
-cp $CWD/slackupdate.desktop $PKG/usr/local/share/applications
+cp $CWD/SlackUpdate.desktop $PKG/usr/local/share/applications
 
 mkdir -p $PKG/install
 cat $CWD/doinst.sh > $PKG/install/doinst.sh
 cat $CWD/slack-desc > $PKG/install/slack-desc
 
 cd $PKG
-/sbin/makepkg -l y -c y $TMP/${PKGNAM}-$VERSION-$ARCH-$BUILD.txz
+/sbin/makepkg -l y -c n $TMP/${PKGNAM}-$VERSION-$ARCH-$BUILD.txz
