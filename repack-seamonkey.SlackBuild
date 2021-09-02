@@ -61,11 +61,11 @@ if [ "$ARCH" = "i586" ]; then
 elif [ "$ARCH" = "i686" ]; then
   OSARCH="linux-i686"
   SYS=""
-  REPO=$(curl -s https://mirrors.kernel.org/slackware/slackware-$SLKUSYS/slackware/xap/ | grep $PRGNAM | grep "txz<" | cut  -b10-38)
+  REPO=$(curl -s https://mirrors.kernel.org/slackware/slackware-$SLKUSYS/slackware/xap/ | grep $PRGNAM | grep "txz<" | cut  -b10-36)
 elif [ "$ARCH" = "x86_64" ]; then
   OSARCH="linux-x86_64"
   SYS="64"
-  REPO=$(curl -s https://mirrors.kernel.org/slackware/slackware64-$SLKUSYS/slackware64/xap/  | grep $PRGNAM | grep "txz<" | cut  -b10-40)
+  REPO=$(curl -s https://mirrors.kernel.org/slackware/slackware64-$SLKUSYS/slackware64/xap/  | grep $PRGNAM | grep "txz<" | cut  -b10-38)
 else
 echo  unsupported system
 exit
@@ -79,8 +79,8 @@ echo looking up your version
 cd $SBUILD
 
 #find version 5 digits or 4 digits
-SMV5D=$(curl -s curl -s https://www.seamonkey-project.org | grep "<b>SeaMonkey" | cut  -b20-27)
-SMV4D=$(curl -s curl -s https://www.seamonkey-project.org | grep "<b>SeaMonkey" | cut  -b20-25)
+SMV5D=$(curl -s https://www.seamonkey-project.org | grep "<b>SeaMonkey" | cut  -b20-27)
+SMV4D=$(curl -s https://www.seamonkey-project.org | grep "<b>SeaMonkey" | cut  -b20-25)
 
 URL=https://ftp.mozilla.org/pub/${PRGNAM}/releases/$SMV5D/$OSARCH/en-US/${PRGNAM}-$SMV5D.en-US.$OSARCH.tar.bz2
 if curl --output /dev/null --silent --fail -r 0-0 "$URL"; then
@@ -113,10 +113,11 @@ else
 echo going to install or upgrade seamonkey
 fi
 
-
+echo $REPO
+sleep 10
 $DLDURL
 tar xvf *.tar.bz2 
-echo wget -c  https://mirrors.kernel.org/slackware/slackware$SYS-$SLKUSYS/slackwareSYS/xap/$REPO
+echo wget -c  https://mirrors.kernel.org/slackware/slackware$SYS-$SLKUSYS/slackware$SYS/xap/$REPO
 wget -c  https://mirrors.kernel.org/slackware/slackware$SYS-$SLKUSYS/slackware$SYS/xap/$REPO
 tar xvf $REPO
 
@@ -179,5 +180,3 @@ EOF
 cd $PKG
 /sbin/makepkg -l y -c n $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD.${PKGTYPE:-tgz}
 upgradepkg --install-new  $OUTPUT/$PRGNAM-$VERSION-$ARCH-$BUILD.${PKGTYPE:-tgz}
-
- 
